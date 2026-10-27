@@ -1,1 +1,4 @@
 # extra dependencies go here
+# docling==2.59.0
+Flask-Executor
+SPARQLWrapper
