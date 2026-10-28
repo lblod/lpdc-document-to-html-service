@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 from string import Template
 
-from constants import DEFAULT_GRAPH
 from sudo_helpers import (
     sparql_escape_datetime,
     sparql_escape_uri,
@@ -22,14 +21,14 @@ class DecisionDocumentNotFoundError(Exception):
     pass
 
 
-def load_task(task_uri, graph=DEFAULT_GRAPH):
+def load_task(task_uri):
     query_template = Template("""
         PREFIX adms: <http://www.w3.org/ns/adms#>
         PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
-        SELECT DISTINCT ?status ?operation
+        SELECT DISTINCT ?graph ?status ?operation
         WHERE {
-            GRAPH $graph {
+            GRAPH ?graph {
                 $task a task:Task;
                       adms:status ?status;
                       task:operation ?operation.
@@ -38,34 +37,39 @@ def load_task(task_uri, graph=DEFAULT_GRAPH):
     """)
 
     query_string = query_template.substitute(
-        graph=sparql_escape_uri(graph),
         task=sparql_escape_uri(task_uri),
     )
 
     results = query(query_string)
     bindings = results["results"]["bindings"]
 
-    if len(bindings) == 0:
+    if not bindings:
         raise TaskNotFoundError(
             f"Task not found: {task_uri}"
         )
 
     if len(bindings) > 1:
+        graphs = [
+            item["graph"]["value"]
+            for item in bindings
+        ]
+
         raise RuntimeError(
-            f"Unexpected number of results for task {task_uri}: "
-            f"{len(bindings)}"
+            f"Task {task_uri} was found multiple times in graphs: "
+            f"{graphs}"
         )
 
     item = bindings[0]
 
     return {
         "uri": task_uri,
+        "graph": item["graph"]["value"],
         "status": item["status"]["value"],
         "operation": item["operation"]["value"],
     }
 
 
-def load_task_input_files(task_uri, graph=DEFAULT_GRAPH):
+def load_task_input_files(task_uri, graph):
     query_template = Template("""
         PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
         PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
@@ -130,7 +134,7 @@ def load_task_input_files(task_uri, graph=DEFAULT_GRAPH):
     return files
 
 
-def load_decision_documents_for_file(logical_file_uri, graph=DEFAULT_GRAPH):
+def load_decision_documents_for_file(logical_file_uri, graph):
     query_template = Template("""
         PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
         PREFIX lpdcExt: <http://lblod.data.gift/vocabularies/lpdcExt/>
@@ -168,7 +172,7 @@ def update_decision_document_html(
     decision_document_uri,
     logical_file_uri,
     html,
-    graph=DEFAULT_GRAPH,
+    graph,
 ):
     query_template = Template("""
         PREFIX dct: <http://purl.org/dc/terms/>
@@ -214,7 +218,7 @@ def update_decision_document_html(
     update(query_string)
 
 
-def update_task_status(task_uri, status, graph=DEFAULT_GRAPH):
+def update_task_status(task_uri, status, graph):
     query_template = Template("""
         PREFIX adms: <http://www.w3.org/ns/adms#>
         PREFIX dct: <http://purl.org/dc/terms/>

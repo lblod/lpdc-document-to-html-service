@@ -53,6 +53,7 @@ def delta_handler():
 def process_task_candidate(task_uri):
     try:
         task = load_task(task_uri)
+        task_graph = task["graph"]
     except TaskNotFoundError:
         log(f"Ignoring unknown task: {task_uri}")
         return
@@ -81,9 +82,10 @@ def process_task_candidate(task_uri):
         update_task_status(
             task_uri,
             TASK_STATUSES["BUSY"],
+            task_graph
         )
 
-        input_files = load_task_input_files(task_uri)
+        input_files = load_task_input_files(task_uri, task_graph)
         prepared_files = []
 
         for input_file in input_files:
@@ -117,7 +119,8 @@ def process_task_candidate(task_uri):
 
             input_file["decision_document_uris"] = (
                 load_decision_documents_for_file(
-                    input_file["logical_file_uri"]
+                    input_file["logical_file_uri"],
+                    task_graph
                 )
             )
 
@@ -153,6 +156,7 @@ def process_task_candidate(task_uri):
                     decision_document_uri,
                     input_file["logical_file_uri"],
                     html,
+                    task_graph
                 )
 
             log(
@@ -163,6 +167,7 @@ def process_task_candidate(task_uri):
         update_task_status(
             task_uri,
             TASK_STATUSES["SUCCESS"],
+            task_graph
         )
 
         log(f"Successfully completed task: {task_uri}")
@@ -174,6 +179,7 @@ def process_task_candidate(task_uri):
             update_task_status(
                 task_uri,
                 TASK_STATUSES["FAILED"],
+                task_graph
             )
         except Exception as status_error:
             log(
@@ -188,6 +194,7 @@ def process_task_candidate(task_uri):
             update_task_status(
                 task_uri,
                 TASK_STATUSES["FAILED"],
+                task_graph
             )
         except Exception as status_error:
             log(
@@ -202,6 +209,7 @@ def process_task_candidate(task_uri):
             update_task_status(
                 task_uri,
                 TASK_STATUSES["FAILED"],
+                task_graph
             )
         except Exception as status_error:
             log(
