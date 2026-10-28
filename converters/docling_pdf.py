@@ -9,8 +9,7 @@ from docling.document_converter import (
     PdfFormatOption,
 )
 
-from converters.base import DocumentConverter
-from sudo_helpers import log
+from converters.document_converter import DocumentConverter
 
 
 class DoclingPdfConverter(DocumentConverter):
@@ -59,11 +58,12 @@ class DoclingPdfConverter(DocumentConverter):
         html = result.document.export_to_html()
         export_seconds = time.perf_counter() - start
 
-        log(
+        print(
             f"Docling conversion of {source_path.name}: "
             f"convert={convert_seconds:.2f}s, "
             f"html export={export_seconds:.2f}s, "
-            f"total={convert_seconds + export_seconds:.2f}s"
+            f"total={convert_seconds + export_seconds:.2f}s",
+            flush=True,
         )
 
         return html
