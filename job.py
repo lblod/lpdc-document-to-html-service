@@ -115,8 +115,7 @@ def load_task_input_files(task_uri, graph=DEFAULT_GRAPH):
     for item in bindings:
         filename = item["filename"]["value"]
 
-        # nfo:fileName should contain the physical path used by the
-        # files model, normally something under /share.
+        # normally something under /share.
         source_path = Path(filename)
 
         files.append({
