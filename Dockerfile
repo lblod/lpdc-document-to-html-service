@@ -1,2 +1,2 @@
 FROM semtech/mu-python-template:feature-no-more-meinheld
-LABEL maintainer="info@redpencil.io"
+LABEL maintainer="loketlokaalbestuur@vlaanderen.be"
