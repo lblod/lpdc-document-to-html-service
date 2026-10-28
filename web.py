@@ -21,12 +21,6 @@ app.config["EXECUTOR_MAX_WORKERS"] = 1
 
 executor = Executor(app)
 
-
-@app.route("/health", methods=["GET"])
-def health():
-    return {"status": "ok"}, 200
-
-
 @app.route("/delta", methods=["POST"])
 def delta_handler():
     request_data = request.get_json(silent=True)

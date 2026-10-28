@@ -18,6 +18,18 @@ def sparql_escape_datetime(value: datetime) -> str:
         "^^<http://www.w3.org/2001/XMLSchema#dateTime>"
     )
 
+def sparql_escape_string(value: str) -> str:
+    escaped = (
+        value
+        .replace("\\", "\\\\")
+        .replace('"', '\\"')
+        .replace("\r", "\\r")
+        .replace("\n", "\\n")
+        .replace("\t", "\\t")
+    )
+
+    return f'"{escaped}"'
+
 
 def log(message):
     print(message, flush=True)

@@ -25,13 +25,13 @@ sparql_update.addCustomHttpHeader("mu-auth-sudo", "true")
 def query(query_string):
     start = time.time()
 
-    logger.debug(f"started query at {datetime.now(timezone.utc)}")
-    logger.debug("execute query:\n" + query_string)
+    logger.info(f"started query at {datetime.now(timezone.utc)}")
+    logger.info("execute query:\n" + query_string)
 
     sparql_query.setQuery(query_string)
     result = sparql_query.query().convert()
 
-    logger.debug(f"query took {time.time() - start} seconds")
+    logger.info(f"query took {time.time() - start} seconds")
     return result
 
 
@@ -43,9 +43,9 @@ def update(query_string):
 
     start = time.time()
 
-    logger.debug(f"started update at {datetime.now(timezone.utc)}")
-    logger.debug("execute update:\n" + query_string)
+    logger.info(f"started update at {datetime.now(timezone.utc)}")
+    logger.info("execute update:\n" + query_string)
 
     sparql_update.query()
 
-    logger.debug(f"update took {time.time() - start} seconds")
+    logger.info(f"update took {time.time() - start} seconds")

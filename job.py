@@ -5,6 +5,7 @@ from string import Template
 
 from sudo_helpers import (
     sparql_escape_datetime,
+    sparql_escape_string,
     sparql_escape_uri,
 )
 from queries import query, update
@@ -209,7 +210,7 @@ def update_decision_document_html(
         graph=sparql_escape_uri(graph),
         decisionDocument=sparql_escape_uri(decision_document_uri),
         logicalFile=sparql_escape_uri(logical_file_uri),
-        html=json.dumps(html),
+        html=sparql_escape_string(html),
         newModified=sparql_escape_datetime(
             datetime.now(timezone.utc)
         ),
