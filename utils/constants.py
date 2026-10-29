@@ -10,7 +10,7 @@ DEFAULT_GRAPH = (
 OPERATIONS = {
     "CONVERT_DOCUMENT_TO_HTML": (
         "http://lblod.data.gift/id/jobs/concept/"
-        "TaskOperation/document-to-html"
+        "TaskOperation/documentToHtml"
     ),
 }
 

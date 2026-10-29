@@ -10,6 +10,7 @@ from sparql.queries import (
     build_update_task_status_query,
 )
 from sparql.client import query, update
+from utils.utils import physical_uri_to_path
 
 
 class TaskNotFoundError(Exception):
@@ -68,8 +69,8 @@ def load_task_input_files(task_uri, graph):
     for item in bindings:
         filename = item["filename"]["value"]
 
-        # normally something under /share.
-        source_path = Path(filename)
+        physical_file_uri = item["physicalFile"]["value"]
+        source_path = physical_uri_to_path(physical_file_uri)
 
         files.append({
             "container_uri": item["container"]["value"],

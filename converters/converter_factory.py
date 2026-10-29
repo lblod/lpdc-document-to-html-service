@@ -1,4 +1,5 @@
 from converters.docling_pdf import DoclingPdfConverter
+from utils.utils import normalize_mime_type
 
 
 PDF_MIME_TYPE = "application/pdf"
@@ -8,7 +9,7 @@ class UnsupportedMimeTypeError(ValueError):
 
 
 def is_supported_mime_type(mime_type: str) -> bool:
-    return mime_type == PDF_MIME_TYPE
+    return normalize_mime_type(mime_type) == PDF_MIME_TYPE
 
 
 def get_converter(mime_type: str):

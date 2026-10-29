@@ -1,4 +1,4 @@
-from constants import TASK_STATUSES
+from utils.constants import TASK_STATUSES
 
 
 ADMS_STATUS = "http://www.w3.org/ns/adms#status"

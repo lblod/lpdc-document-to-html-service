@@ -1,4 +1,4 @@
-from constants import OPERATIONS, TASK_STATUSES
+from utils.constants import OPERATIONS, TASK_STATUSES
 from converters.converter_factory import (
     get_converter,
     is_supported_mime_type,
