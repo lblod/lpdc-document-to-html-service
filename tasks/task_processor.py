@@ -4,15 +4,28 @@ from converters.converter_factory import (
     is_supported_mime_type,
 )
 from tasks.task_repository import (
-    DecisionDocumentNotFoundError,
-    TaskInputNotFoundError,
     TaskNotFoundError,
     load_decision_documents_for_file,
     load_task,
     load_task_input_files,
     update_decision_document_html,
     update_task_status,
+    load_job_uri_of_task,
 )
+
+def _set_final_status(task_uri, job_uri, status, graph):
+    for uri in (task_uri, job_uri):
+        if uri is None:
+            continue
+        try:
+            update_task_status(uri, status, graph)
+        except Exception as status_error:
+            print(
+                f"Could not set status {status} on {uri}: {status_error}",
+                flush=True,
+            )
+
+
 def process_task_candidate(task_uri):
     try:
         task = load_task(task_uri)
@@ -44,11 +57,13 @@ def process_task_candidate(task_uri):
     print(f"Accepted document-to-HTML task: {task_uri}", flush=True)
 
     try:
-        update_task_status(
-            task_uri,
-            TASK_STATUSES["BUSY"],
-            task_graph
-        )
+        job_uri = load_job_uri_of_task(task_uri, task_graph)
+    except Exception as error:
+        print(f"Could not find job for task {task_uri}: {error}", flush=True)
+        job_uri = None
+
+    try:
+        update_task_status(task_uri, TASK_STATUSES["BUSY"], task_graph)
 
         input_files = load_task_input_files(task_uri, task_graph)
         prepared_files = []
@@ -131,58 +146,14 @@ def process_task_candidate(task_uri):
                 flush=True,
             )
 
-        update_task_status(
-            task_uri,
-            TASK_STATUSES["SUCCESS"],
-            task_graph
+        _set_final_status(
+            task_uri, job_uri, TASK_STATUSES["SUCCESS"], task_graph
         )
 
         print(f"Successfully completed task: {task_uri}", flush=True)
 
-    except TaskInputNotFoundError as error:
-        print(f"Task has no usable input files: {error}", flush=True)
-
-        try:
-            update_task_status(
-                task_uri,
-                TASK_STATUSES["FAILED"],
-                task_graph
-            )
-        except Exception as status_error:
-            print(
-                f"Could not mark task {task_uri} as failed: "
-                f"{status_error}",
-                flush=True,
-            )
-
-    except DecisionDocumentNotFoundError as error:
-        print(f"Could not find output decision document: {error}", flush=True)
-
-        try:
-            update_task_status(
-                task_uri,
-                TASK_STATUSES["FAILED"],
-                task_graph
-            )
-        except Exception as status_error:
-            print(
-                f"Could not mark task {task_uri} as failed: "
-                f"{status_error}",
-                flush=True,
-            )
-
     except Exception as error:
         print(f"Failed to process task {task_uri}: {error}", flush=True)
-
-        try:
-            update_task_status(
-                task_uri,
-                TASK_STATUSES["FAILED"],
-                task_graph
-            )
-        except Exception as status_error:
-            print(
-                f"Could not mark task {task_uri} as failed: "
-                f"{status_error}",
-                flush=True,
-            )
+        _set_final_status(
+            task_uri, job_uri, TASK_STATUSES["FAILED"], task_graph
+        )

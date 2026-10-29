@@ -134,7 +134,6 @@ def build_update_task_status_query(task_uri, status, graph, modified):
     query_template = Template("""
         PREFIX adms: <http://www.w3.org/ns/adms#>
         PREFIX dct: <http://purl.org/dc/terms/>
-        PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
         DELETE {
             GRAPH $graph {
@@ -150,8 +149,7 @@ def build_update_task_status_query(task_uri, status, graph, modified):
         }
         WHERE {
             GRAPH $graph {
-                $task a task:Task;
-                      adms:status ?oldStatus.
+                $task adms:status ?oldStatus.
 
                 OPTIONAL {
                     $task dct:modified ?oldModified.
@@ -165,4 +163,22 @@ def build_update_task_status_query(task_uri, status, graph, modified):
         task=sparql_escape_uri(task_uri),
         newStatus=sparql_escape_uri(status),
         newModified=sparql_escape_datetime(modified),
+    )
+
+
+def build_load_job_of_task_query(task_uri, graph):
+    query_template = Template("""
+        PREFIX dct: <http://purl.org/dc/terms/>
+
+        SELECT DISTINCT ?job
+        WHERE {
+            GRAPH $graph {
+                $task dct:isPartOf ?job.
+            }
+        }
+    """)
+
+    return query_template.substitute(
+        graph=sparql_escape_uri(graph),
+        task=sparql_escape_uri(task_uri),
     )

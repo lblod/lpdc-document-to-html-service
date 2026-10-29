@@ -8,22 +8,22 @@ from sparql.queries import (
     build_load_task_query,
     build_update_decision_document_html_query,
     build_update_task_status_query,
+    build_load_job_of_task_query,
 )
 from sparql.client import query, update
 from utils.utils import physical_uri_to_path
 
-
 class TaskNotFoundError(Exception):
     pass
-
 
 class TaskInputNotFoundError(Exception):
     pass
 
-
 class DecisionDocumentNotFoundError(Exception):
     pass
 
+class JobNotFoundError(Exception):
+    pass
 
 def load_task(task_uri):
     results = query(build_load_task_query(task_uri))
@@ -53,6 +53,19 @@ def load_task(task_uri):
         "status": item["status"]["value"],
         "operation": item["operation"]["value"],
     }
+
+
+def load_job_uri_of_task(task_uri, graph):
+    results = query(build_load_job_of_task_query(task_uri, graph))
+    bindings = results["results"]["bindings"]
+
+    if not bindings:
+        raise JobNotFoundError(f"No job found for task: {task_uri}")
+
+    if len(bindings) > 1:
+        raise RuntimeError(f"Task {task_uri} belongs to multiple jobs")
+
+    return bindings[0]["job"]["value"]
 
 
 def load_task_input_files(task_uri, graph):

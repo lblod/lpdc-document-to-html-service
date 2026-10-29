@@ -1,10 +1,14 @@
 import os
-
+from pathlib import Path
 
 DEFAULT_GRAPH = (
     os.environ.get("DEFAULT_GRAPH")
     or "http://mu.semte.ch/graphs/public"
 )
+
+
+SHARE_PREFIX = "share://"
+SHARE_DIR = Path("/share")
 
 
 OPERATIONS = {
