@@ -1,1 +1,7 @@
 # extra dependencies go here
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
+docling==2.59.0
+Flask-Executor
+SPARQLWrapper
