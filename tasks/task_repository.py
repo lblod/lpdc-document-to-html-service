@@ -3,10 +3,10 @@ import json
 from pathlib import Path
 
 from sparql.queries import (
-    build_load_decision_documents_query,
+    build_load_source_documents_query,
     build_load_task_input_files_query,
     build_load_task_query,
-    build_update_decision_document_html_query,
+    build_update_source_document_html_query,
     build_update_task_status_query,
     build_load_job_of_task_query,
 )
@@ -19,7 +19,7 @@ class TaskNotFoundError(Exception):
 class TaskInputNotFoundError(Exception):
     pass
 
-class DecisionDocumentNotFoundError(Exception):
+class SourceDocumentNotFoundError(Exception):
     pass
 
 class JobNotFoundError(Exception):
@@ -97,32 +97,32 @@ def load_task_input_files(task_uri, graph):
     return files
 
 
-def load_decision_documents_for_file(logical_file_uri, graph):
+def load_source_documents_for_file(logical_file_uri, graph):
     results = query(
-        build_load_decision_documents_query(logical_file_uri, graph)
+        build_load_source_documents_query(logical_file_uri, graph)
     )
     documents = [
-        item["decisionDocument"]["value"]
+        item["sourceDocument"]["value"]
         for item in results["results"]["bindings"]
     ]
 
     if not documents:
-        raise DecisionDocumentNotFoundError(
-            "No decision document is linked to input file: "
+        raise SourceDocumentNotFoundError(
+            "No source document is linked to input file: "
             f"{logical_file_uri}"
         )
 
     return documents
 
 
-def update_decision_document_html(
-    decision_document_uri,
+def update_source_document_html(
+    source_document_uri,
     logical_file_uri,
     html,
     graph,
 ):
-    query_string = build_update_decision_document_html_query(
-        decision_document_uri,
+    query_string = build_update_source_document_html_query(
+        source_document_uri,
         logical_file_uri,
         html,
         graph,

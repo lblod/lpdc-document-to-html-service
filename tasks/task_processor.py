@@ -5,10 +5,10 @@ from converters.converter_factory import (
 )
 from tasks.task_repository import (
     TaskNotFoundError,
-    load_decision_documents_for_file,
+    load_source_documents_for_file,
     load_task,
     load_task_input_files,
-    update_decision_document_html,
+    update_source_document_html,
     update_task_status,
     load_job_uri_of_task,
 )
@@ -97,8 +97,8 @@ def process_task_candidate(task_uri):
                     f"{input_file['logical_file_uri']}"
                 )
 
-            input_file["decision_document_uris"] = (
-                load_decision_documents_for_file(
+            input_file["source_document_uris"] = (
+                load_source_documents_for_file(
                     input_file["logical_file_uri"],
                     task_graph
                 )
@@ -130,11 +130,11 @@ def process_task_candidate(task_uri):
             converted_files.append((input_file, html))
 
         for input_file, html in converted_files:
-            for decision_document_uri in input_file[
-                "decision_document_uris"
+            for source_document_uri in input_file[
+                "source_document_uris"
             ]:
-                update_decision_document_html(
-                    decision_document_uri,
+                update_source_document_html(
+                    source_document_uri,
                     input_file["logical_file_uri"],
                     html,
                     task_graph

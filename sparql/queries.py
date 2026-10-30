@@ -63,15 +63,15 @@ def build_load_task_input_files_query(task_uri, graph):
     )
 
 
-def build_load_decision_documents_query(logical_file_uri, graph):
+def build_load_source_documents_query(logical_file_uri, graph):
     query_template = Template("""
         PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
         PREFIX lpdcExt: <http://lblod.data.gift/vocabularies/lpdcExt/>
 
-        SELECT DISTINCT ?decisionDocument
+        SELECT DISTINCT ?sourceDocument
         WHERE {
             GRAPH $graph {
-                ?decisionDocument a lpdcExt:DecisionDocument;
+                ?sourceDocument a lpdcExt:SourceDocument;
                                   nie:dataSource $logicalFile.
             }
         }
@@ -83,8 +83,8 @@ def build_load_decision_documents_query(logical_file_uri, graph):
     )
 
 
-def build_update_decision_document_html_query(
-    decision_document_uri,
+def build_update_source_document_html_query(
+    source_document_uri,
     logical_file_uri,
     html,
     graph,
@@ -97,25 +97,25 @@ def build_update_decision_document_html_query(
 
         DELETE {
             GRAPH $graph {
-                $decisionDocument lpdcExt:extractedHtml ?oldHtml.
-                $decisionDocument dct:modified ?oldModified.
+                $sourceDocument lpdcExt:extractedHtml ?oldHtml.
+                $sourceDocument dct:modified ?oldModified.
             }
         }
         INSERT {
             GRAPH $graph {
-                $decisionDocument lpdcExt:extractedHtml $html.
-                $decisionDocument dct:modified $newModified.
+                $sourceDocument lpdcExt:extractedHtml $html.
+                $sourceDocument dct:modified $newModified.
             }
         }
         WHERE {
             GRAPH $graph {
-                $decisionDocument a lpdcExt:DecisionDocument;
+                $sourceDocument a lpdcExt:SourceDocument;
                                   nie:dataSource $logicalFile.
                 OPTIONAL {
-                    $decisionDocument lpdcExt:extractedHtml ?oldHtml.
+                    $sourceDocument lpdcExt:extractedHtml ?oldHtml.
                 }
                 OPTIONAL {
-                    $decisionDocument dct:modified ?oldModified.
+                    $sourceDocument dct:modified ?oldModified.
                 }
             }
         }
@@ -123,7 +123,7 @@ def build_update_decision_document_html_query(
 
     return query_template.substitute(
         graph=sparql_escape_uri(graph),
-        decisionDocument=sparql_escape_uri(decision_document_uri),
+        sourceDocument=sparql_escape_uri(source_document_uri),
         logicalFile=sparql_escape_uri(logical_file_uri),
         html=sparql_escape_string(html),
         newModified=sparql_escape_datetime(modified),
