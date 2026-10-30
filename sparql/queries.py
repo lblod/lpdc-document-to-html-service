@@ -22,7 +22,9 @@ def build_load_task_query(task_uri):
         }
     """)
 
-    return query_template.substitute(task=sparql_escape_uri(task_uri))
+    return query_template.substitute(
+        task=sparql_escape_uri(task_uri)
+    )
 
 
 def build_load_task_input_files_query(task_uri, graph):
@@ -44,13 +46,15 @@ def build_load_task_input_files_query(task_uri, graph):
 
                 ?container task:hasFile ?logicalFile.
 
-                ?physicalFile
+                ?logicalFile
                     a nfo:FileDataObject;
-                    nie:dataSource ?logicalFile;
                     nfo:fileName ?filename.
 
+                ?physicalFile
+                    nie:dataSource ?logicalFile.
+
                 OPTIONAL {
-                    ?physicalFile dct:format ?format.
+                    ?logicalFile dct:format ?format.
                 }
             }
         }
@@ -65,14 +69,12 @@ def build_load_task_input_files_query(task_uri, graph):
 
 def build_load_source_documents_query(logical_file_uri, graph):
     query_template = Template("""
-        PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
-        PREFIX lpdcExt: <http://lblod.data.gift/vocabularies/lpdcExt/>
+        PREFIX dct: <http://purl.org/dc/terms/>
 
         SELECT DISTINCT ?sourceDocument
         WHERE {
             GRAPH $graph {
-                ?sourceDocument a lpdcExt:SourceDocument;
-                                  nie:dataSource $logicalFile.
+                ?sourceDocument dct:source $logicalFile.
             }
         }
     """)
@@ -92,7 +94,6 @@ def build_update_source_document_html_query(
 ):
     query_template = Template("""
         PREFIX dct: <http://purl.org/dc/terms/>
-        PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
         PREFIX lpdcExt: <http://lblod.data.gift/vocabularies/lpdcExt/>
 
         DELETE {
@@ -109,11 +110,12 @@ def build_update_source_document_html_query(
         }
         WHERE {
             GRAPH $graph {
-                $sourceDocument a lpdcExt:SourceDocument;
-                                  nie:dataSource $logicalFile.
+                $sourceDocument dct:source $logicalFile.
+
                 OPTIONAL {
                     $sourceDocument lpdcExt:extractedHtml ?oldHtml.
                 }
+
                 OPTIONAL {
                     $sourceDocument dct:modified ?oldModified.
                 }
