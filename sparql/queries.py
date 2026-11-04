@@ -94,17 +94,17 @@ def build_update_source_document_html_query(
 ):
     query_template = Template("""
         PREFIX dct: <http://purl.org/dc/terms/>
-        PREFIX lpdcExt: <http://lblod.data.gift/vocabularies/lpdcExt/>
+        PREFIX lpdc: <http://data.lblod.info/vocabularies/lpdc/>
 
         DELETE {
             GRAPH $graph {
-                $sourceDocument lpdcExt:extractedHtml ?oldHtml.
+                $sourceDocument lpdc:extractedHtml ?oldHtml.
                 $sourceDocument dct:modified ?oldModified.
             }
         }
         INSERT {
             GRAPH $graph {
-                $sourceDocument lpdcExt:extractedHtml $html.
+                $sourceDocument lpdc:extractedHtml $html.
                 $sourceDocument dct:modified $newModified.
             }
         }
@@ -113,7 +113,7 @@ def build_update_source_document_html_query(
                 $sourceDocument dct:source $logicalFile.
 
                 OPTIONAL {
-                    $sourceDocument lpdcExt:extractedHtml ?oldHtml.
+                    $sourceDocument lpdc:extractedHtml ?oldHtml.
                 }
 
                 OPTIONAL {
