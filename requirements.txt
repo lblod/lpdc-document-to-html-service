@@ -5,3 +5,4 @@ torchvision
 docling==2.59.0
 Flask-Executor
 SPARQLWrapper
+nh3==0.3.7

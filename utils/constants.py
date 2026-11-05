@@ -1,6 +1,16 @@
 import os
 from pathlib import Path
 
+PREFIXES = """
+PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
+PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
+PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX adms: <http://www.w3.org/ns/adms#>
+PREFIX lpdc: <http://data.lblod.info/vocabularies/lpdc/>
+"""
+
+
 DEFAULT_GRAPH = (
     os.environ.get("DEFAULT_GRAPH")
     or "http://mu.semte.ch/graphs/public"
@@ -42,4 +52,21 @@ TASK_STATUSES = {
         "http://redpencil.data.gift/id/concept/"
         "JobStatus/failed"
     ),
+}
+
+HTML_ALLOWED_TAGS = {
+    "h1", "h2", "h3", "h4", "h5", "h6",
+    "p", "br",
+    "strong", "em", "b", "i", "u",
+    "ul", "ol", "li",
+    "dl", "dt", "dd",
+    "table", "thead", "tbody", "tr", "th", "td", "caption",
+    "figure", "figcaption",
+    "blockquote",
+    "pre", "code",
+    "div", "span",
+}
+
+HTML_ALLOWED_ATTRIBUTES = {
+    "*": {"colspan", "rowspan"},
 }

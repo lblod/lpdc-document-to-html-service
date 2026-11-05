@@ -1,4 +1,5 @@
 from utils.constants import OPERATIONS, TASK_STATUSES
+from utils.utils import sanitize_html, has_html_content
 from converters.converter_factory import (
     get_converter,
     is_supported_mime_type,
@@ -125,6 +126,13 @@ def process_task_candidate(task_uri):
             if not isinstance(html, str) or not html.strip():
                 raise ValueError(
                     f"Converter returned no HTML for {source_path}"
+                )
+
+            html = sanitize_html(html)
+
+            if not has_html_content(html):
+                raise ValueError(
+                    f"Sanitization left no meaningful HTML for {source_path}"
                 )
 
             converted_files.append((input_file, html))

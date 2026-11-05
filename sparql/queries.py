@@ -1,5 +1,6 @@
 from string import Template
 
+from utils.constants import PREFIXES
 from sparql.formatting import (
     sparql_escape_datetime,
     sparql_escape_string,
@@ -9,8 +10,7 @@ from sparql.formatting import (
 
 def build_load_task_query(task_uri):
     query_template = Template("""
-        PREFIX adms: <http://www.w3.org/ns/adms#>
-        PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
+        $PREFIXES
 
         SELECT DISTINCT ?graph ?status ?operation
         WHERE {
@@ -23,16 +23,14 @@ def build_load_task_query(task_uri):
     """)
 
     return query_template.substitute(
-        task=sparql_escape_uri(task_uri)
+        task=sparql_escape_uri(task_uri),
+        PREFIXES = PREFIXES,
     )
 
 
 def build_load_task_input_files_query(task_uri, graph):
     query_template = Template("""
-        PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
-        PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
-        PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
-        PREFIX dct: <http://purl.org/dc/terms/>
+        $PREFIXES
 
         SELECT DISTINCT
             ?container
@@ -66,12 +64,13 @@ def build_load_task_input_files_query(task_uri, graph):
     return query_template.substitute(
         graph=sparql_escape_uri(graph),
         task=sparql_escape_uri(task_uri),
+        PREFIXES = PREFIXES,
     )
 
 
 def build_load_source_documents_query(logical_file_uri, graph):
     query_template = Template("""
-        PREFIX dct: <http://purl.org/dc/terms/>
+        $PREFIXES
 
         SELECT DISTINCT ?sourceDocument
         WHERE {
@@ -84,6 +83,7 @@ def build_load_source_documents_query(logical_file_uri, graph):
     return query_template.substitute(
         graph=sparql_escape_uri(graph),
         logicalFile=sparql_escape_uri(logical_file_uri),
+        PREFIXES = PREFIXES,
     )
 
 
@@ -95,8 +95,7 @@ def build_update_source_document_html_query(
     modified,
 ):
     query_template = Template("""
-        PREFIX dct: <http://purl.org/dc/terms/>
-        PREFIX lpdc: <http://data.lblod.info/vocabularies/lpdc/>
+        $PREFIXES
 
         DELETE {
             GRAPH $graph {
@@ -131,13 +130,13 @@ def build_update_source_document_html_query(
         logicalFile=sparql_escape_uri(logical_file_uri),
         html=sparql_escape_string(html),
         newModified=sparql_escape_datetime(modified),
+        PREFIXES = PREFIXES,
     )
 
 
 def build_update_task_status_query(task_uri, status, graph, modified):
     query_template = Template("""
-        PREFIX adms: <http://www.w3.org/ns/adms#>
-        PREFIX dct: <http://purl.org/dc/terms/>
+        $PREFIXES
 
         DELETE {
             GRAPH $graph {
@@ -167,12 +166,13 @@ def build_update_task_status_query(task_uri, status, graph, modified):
         task=sparql_escape_uri(task_uri),
         newStatus=sparql_escape_uri(status),
         newModified=sparql_escape_datetime(modified),
+        PREFIXES = PREFIXES,
     )
 
 
 def build_load_job_of_task_query(task_uri, graph):
     query_template = Template("""
-        PREFIX dct: <http://purl.org/dc/terms/>
+        $PREFIXES
 
         SELECT DISTINCT ?job
         WHERE {
@@ -185,4 +185,5 @@ def build_load_job_of_task_query(task_uri, graph):
     return query_template.substitute(
         graph=sparql_escape_uri(graph),
         task=sparql_escape_uri(task_uri),
+        PREFIXES = PREFIXES,
     )
