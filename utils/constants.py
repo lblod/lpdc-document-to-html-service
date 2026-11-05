@@ -18,6 +18,12 @@ OPERATIONS = {
     ),
 }
 
+PDF_MIME_TYPE = "application/pdf"
+HTML_MIME_TYPES = {
+    "text/html",
+    "application/xhtml+xml",
+}
+
 
 TASK_STATUSES = {
     "BUSY": (

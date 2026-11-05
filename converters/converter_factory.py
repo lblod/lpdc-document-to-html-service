@@ -1,20 +1,25 @@
 from converters.docling_pdf import DoclingPdfConverter
+from converters.html import HtmlConverter
 from utils.utils import normalize_mime_type
-
-
-PDF_MIME_TYPE = "application/pdf"
-
+from utils.constants import PDF_MIME_TYPE, HTML_MIME_TYPES
 class UnsupportedMimeTypeError(ValueError):
     pass
 
 
 def is_supported_mime_type(mime_type: str) -> bool:
-    return normalize_mime_type(mime_type) == PDF_MIME_TYPE
+    normalized = normalize_mime_type(mime_type)
+
+    return normalized == PDF_MIME_TYPE or normalized in HTML_MIME_TYPES
 
 
 def get_converter(mime_type: str):
-    if is_supported_mime_type(mime_type):
+    normalized = normalize_mime_type(mime_type)
+
+    if normalized == PDF_MIME_TYPE:
         return DoclingPdfConverter()
+
+    if normalized in HTML_MIME_TYPES:
+        return HtmlConverter()
 
     raise UnsupportedMimeTypeError(
         f"Unsupported MIME type: {mime_type}"
