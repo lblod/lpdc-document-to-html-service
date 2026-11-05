@@ -43,18 +43,20 @@ def build_load_task_input_files_query(task_uri, graph):
         WHERE {
             GRAPH $graph {
                 $task task:inputContainer ?container.
-
                 ?container task:hasFile ?logicalFile.
 
-                ?logicalFile
+                OPTIONAL {
+                    ?physicalCandidate nie:dataSource ?logicalFile.
+                }
+
+                BIND(COALESCE(?physicalCandidate, ?logicalFile) AS ?physicalFile)
+
+                ?physicalFile
                     a nfo:FileDataObject;
                     nfo:fileName ?filename.
 
-                ?physicalFile
-                    nie:dataSource ?logicalFile.
-
                 OPTIONAL {
-                    ?logicalFile dct:format ?format.
+                    ?physicalFile dct:format ?format.
                 }
             }
         }
